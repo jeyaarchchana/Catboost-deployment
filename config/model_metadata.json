@@ -1,0 +1,6 @@
+{
+    "model_name": "catboost_delivery_time_predictor",
+    "version": "1.0",
+    "model_file": "catboost_pipeline_v1.pkl",
+    "date_trained": "2025-07-24"
+}
