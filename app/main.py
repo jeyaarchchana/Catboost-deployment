@@ -23,6 +23,11 @@ app = FastAPI(
     description="Predicts delivery time using a trained CatBoostRegressor pipeline"
 )
 
+# ✅ Add this root endpoint
+@app.get("/")
+def root():
+    return {"message": "Delivery Time Prediction API is running!"}
+
 # Define request schema
 class DeliveryInput(BaseModel):
     source_name: str
@@ -36,23 +41,20 @@ class DeliveryInput(BaseModel):
     segment_osrm_distance: float
     segment_factor: float
 
-# Define response schema
-#class PredictionResponse(BaseModel):
-#    predicted_delivery_time: float
-
+# Health check endpoint
 @app.get("/health")
 def health_check():
-    return{"status":"ok", "model_loaded":model_pipeline is not None}
+    return {"status": "ok", "model_loaded": model_pipeline is not None}
 
+# Prediction endpoint
 @app.post("/predict")
-def predict(input_data:DeliveryInput):
+def predict(input_data: DeliveryInput):
     try:
         df = pd.DataFrame([input_data.dict()])
-        prediction =model_pipeline.predict(df)
-        return {"predicted_actual_time":prediction.tolist()[0]}
+        prediction = model_pipeline.predict(df)
+        return {"predicted_actual_time": prediction.tolist()[0]}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 # Add Prometheus Instrumentation
 Instrumentator().instrument(app).expose(app)
-
